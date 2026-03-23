@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropped drivers — SHTL Admin</title>
+    <link rel="stylesheet" href="css/admin-app.css" />
+  </head>
+  <body class="admin-app">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="admin-page-title">Dropped drivers</h1>
+        <p class="admin-muted">
+          Madereva walioacha / kuondolewa kwenye orodha kuu. Unaweza
+          <strong>warudishe hai</strong> au <a href="sajili-dereva.html">wahariri</a> kwenye fomu.
+        </p>
+
+        <div class="admin-card">
+          <p class="admin-muted" style="margin-top: 0">
+            <a href="orodha-madereva.html">← Orodha ya madereva hai</a>
+          </p>
+          <div class="admin-table-wrap">
+            <table class="table-spreadsheet">
+              <thead>
+                <tr>
+                  <th>DRIVER NAME</th>
+                  <th>TRUCK</th>
+                  <th>MOBILE</th>
+                  <th>INCHARGE</th>
+                  <th>DROPPED (TAREHE)</th>
+                  <th>Vitendo</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-dropped"></tbody>
+            </table>
+          </div>
+          <p class="admin-empty" id="empty-dropped" hidden>Hakuna dropped driver bado.</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-shell.js"></script>
+    <script src="js/excel-export.js"></script>
+    <script>
+      (function () {
+        if (!window.SHTLAuth.requireAuth("index.html")) return;
+        window.SHTLAdminShell.render("dropped");
+
+        function inchargeName(id) {
+          var f = window.SHTL.getIncharges().find(function (i) {
+            return i.id === id;
+          });
+          return f ? f.name : "";
+        }
+
+        function fmtDroppedAt(iso) {
+          if (!iso) return "—";
+          return window.SHTLExcel.formatDateMDY(iso.slice(0, 10));
+        }
+
+        function render() {
+          var list = window.SHTL.getDrivers().filter(function (d) {
+            return !!d.dropped;
+          });
+          var tb = document.getElementById("tbody-dropped");
+          var empty = document.getElementById("empty-dropped");
+          tb.innerHTML = "";
+          if (!list.length) {
+            empty.hidden = false;
+            return;
+          }
+          empty.hidden = true;
+          list.forEach(function (d) {
+            var tr = document.createElement("tr");
+            function td(text) {
+              var c = document.createElement("td");
+              c.textContent = text;
+              return c;
+            }
+            tr.appendChild(td((d.driverName || "").toUpperCase()));
+            tr.appendChild(td(d.truckNumber || "—"));
+            tr.appendChild(td(d.mobile || "—"));
+            tr.appendChild(td(inchargeName(d.inchargeId)));
+            tr.appendChild(td(fmtDroppedAt(d.droppedAt)));
+
+            var tdAct = document.createElement("td");
+            var restore = document.createElement("button");
+            restore.type = "button";
+            restore.className = "admin-btn admin-btn--outline";
+            restore.textContent = "Rudisha hai";
+            restore.addEventListener("click", function () {
+              var all = window.SHTL.getDrivers();
+              var ix = all.findIndex(function (x) {
+                return x.id === d.id;
+              });
+              if (ix === -1) return;
+              all[ix] = Object.assign({}, all[ix], { dropped: false, droppedAt: "" });
+              window.SHTL.saveDrivers(all);
+              render();
+            });
+            var edit = document.createElement("a");
+            edit.href = "sajili-dereva.html?id=" + encodeURIComponent(d.id);
+            edit.textContent = "Hariri";
+            edit.style.marginLeft = "0.35rem";
+            tdAct.appendChild(restore);
+            tdAct.appendChild(edit);
+            tr.appendChild(tdAct);
+            tb.appendChild(tr);
+          });
+        }
+
+        render();
+      })();
+    </script>
+  </body>
+</html>

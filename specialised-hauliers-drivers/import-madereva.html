@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ingiza Excel — SHTL Admin</title>
+    <link rel="stylesheet" href="css/admin-app.css" />
+  </head>
+  <body class="admin-app">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="admin-page-title">Ingiza madereva kutoka Excel</h1>
+        <p class="admin-muted">
+          Pakia faili <strong>.xlsx</strong> lenye vichwa kama vya ripoti inayotolewa
+          (<a href="pakua-excel.html">Pakua Excel</a>). Kila mstari utahifadhi
+          <strong>TRUCK NUMBER</strong> yake yote (namba za lori zote katika faili) pamoja na dereva.
+          Baada ya kuagiza unaweza <a href="orodha-madereva.html">kuhariri</a> na kisha
+          <strong>kupakua tena</strong> faili lililosasishwa.
+        </p>
+
+        <div class="admin-card">
+          <h2>Chagua faili</h2>
+          <p class="admin-muted">
+            <button type="button" class="admin-btn admin-btn--outline" id="btn-template">
+              Pakua kiolezo (safu za vichwa pekee)
+            </button>
+          </p>
+          <div class="admin-form-group">
+            <label for="file-xlsx">Faili la Excel (.xlsx)</label>
+            <input id="file-xlsx" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+          </div>
+          <div id="msg-parse"></div>
+
+          <div id="preview-wrap" hidden>
+            <h2 class="admin-muted" style="margin-top: 1rem; font-size: 1rem">Hakiki kabla ya kuagiza</h2>
+            <p class="admin-muted">
+              Mistari: <strong id="preview-count">0</strong>
+            </p>
+            <p class="admin-muted" id="truck-summary" style="margin-top: 0.35rem; line-height: 1.45"></p>
+            <div class="admin-table-wrap" style="max-height: 320px">
+              <table class="table-spreadsheet" id="preview-table">
+                <thead>
+                  <tr>
+                    <th>DRIVER NAME</th>
+                    <th>TRUCK</th>
+                    <th>INCHARGE</th>
+                    <th>DROPPED</th>
+                  </tr>
+                </thead>
+                <tbody id="preview-body"></tbody>
+              </table>
+            </div>
+
+            <div class="admin-form-group" style="margin-top: 1rem">
+              <label>Njia ya kuagiza</label>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem">
+                <label class="admin-muted" style="cursor: pointer">
+                  <input type="radio" name="mode" value="merge" checked />
+                  Ongeza juu ya madereva yaliyopo (haufuti yaliyopo)
+                </label>
+                <label class="admin-muted" style="cursor: pointer">
+                  <input type="radio" name="mode" value="replace" />
+                  Badilisha yote — futa madereva yote kisha weka yaliyo kwenye faili (hatari)
+                </label>
+              </div>
+            </div>
+            <button type="button" class="admin-btn admin-btn--primary" id="btn-apply">
+              Ingiza kwenye mfumo
+            </button>
+          </div>
+          <div id="msg-apply"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-shell.js"></script>
+    <script src="js/excel-import.js"></script>
+    <script>
+      (function () {
+        if (!window.SHTLAuth.requireAuth("index.html")) return;
+        window.SHTLAdminShell.render("import");
+
+        var parsed = null;
+
+        document.getElementById("btn-template").addEventListener("click", function () {
+          window.SHTLExcelImport.downloadTemplate();
+        });
+
+        document.getElementById("file-xlsx").addEventListener("change", function (e) {
+          var f = e.target.files && e.target.files[0];
+          var msg = document.getElementById("msg-parse");
+          var wrap = document.getElementById("preview-wrap");
+          msg.innerHTML = "";
+          parsed = null;
+          wrap.hidden = true;
+          if (!f) return;
+          var reader = new FileReader();
+          reader.onload = function () {
+            try {
+              var r = window.SHTLExcelImport.parseWorkbook(reader.result);
+              parsed = r;
+              if (r.errors.length && !r.rows.length) {
+                msg.innerHTML =
+                  '<div class="admin-alert admin-alert--error">' + r.errors.join(" ") + "</div>";
+                return;
+              }
+              if (r.errors.length) {
+                msg.innerHTML =
+                  '<div class="admin-alert admin-alert--error">' + r.errors.join("<br>") + "</div>";
+              }
+              document.getElementById("preview-count").textContent = String(r.rows.length);
+              var ts = document.getElementById("truck-summary");
+              if (r.truckNumbers && r.truckNumbers.length) {
+                ts.innerHTML =
+                  "<strong>Namba za lori kwenye faili (" +
+                  r.truckNumbers.length +
+                  "):</strong> " +
+                  r.truckNumbers.map(function (t) {
+                    return String(t).replace(/</g, "&lt;");
+                  }).join(", ");
+              } else if (r.truckColumnFound) {
+                ts.innerHTML =
+                  "<em>Hakuna namba ya lori kwenye mistari (safu ya TRUCK iko tupu).</em>";
+              } else {
+                ts.innerHTML =
+                  "<strong>Onyo:</strong> safu ya TRUCK NUMBER haijapatikana — namba za lori hazijahifadhiwa.";
+              }
+              var tb = document.getElementById("preview-body");
+              tb.innerHTML = "";
+              r.rows.slice(0, 50).forEach(function (row) {
+                var tr = document.createElement("tr");
+                ["driverName", "truckNumber", "inchargeName", "dropped"].forEach(function (k) {
+                  var td = document.createElement("td");
+                  td.textContent =
+                    k === "dropped" ? (row.dropped ? "YES" : "NO") : String(row[k] || "");
+                  tr.appendChild(td);
+                });
+                tb.appendChild(tr);
+              });
+              if (r.rows.length > 50) {
+                var tr = document.createElement("tr");
+                var td = document.createElement("td");
+                td.colSpan = 4;
+                td.textContent = "… na mengine " + (r.rows.length - 50);
+                td.className = "admin-muted";
+                tr.appendChild(td);
+                tb.appendChild(tr);
+              }
+              wrap.hidden = false;
+            } catch (err) {
+              msg.innerHTML =
+                '<div class="admin-alert admin-alert--error">' +
+                (err && err.message ? err.message : "Hitilafu ya kusoma faili.") +
+                "</div>";
+            }
+          };
+          reader.readAsArrayBuffer(f);
+        });
+
+        document.getElementById("btn-apply").addEventListener("click", function () {
+          var msg = document.getElementById("msg-apply");
+          msg.innerHTML = "";
+          if (!parsed || !parsed.rows.length) {
+            msg.innerHTML =
+              '<div class="admin-alert admin-alert--error">Soma faili kwanza.</div>';
+            return;
+          }
+          var mode = document.querySelector('input[name="mode"]:checked').value;
+          if (mode === "replace") {
+            if (
+              !confirm(
+                "Hii itafuta madereva yote yaliyopo kwenye mfumo na kuweka yaliyo kwenye faili. Endelea?"
+              )
+            ) {
+              return;
+            }
+          }
+          var res = window.SHTLExcelImport.applyImport(parsed.rows, mode === "replace" ? "replace" : "merge");
+          if (!res.ok) {
+            msg.innerHTML =
+              '<div class="admin-alert admin-alert--error">' + res.errors.join("<br>") + "</div>";
+            return;
+          }
+          var html =
+            '<div class="admin-alert admin-alert--success">Imeagiza madereva ' +
+            res.imported +
+            ". ";
+          html +=
+            ' <a href="orodha-madereva.html">Angalia orodha</a> · <a href="pakua-excel.html">Pakua Excel</a> baada ya mabadiliko.</div>';
+          if (res.warnings && res.warnings.length) {
+            html +=
+              '<div class="admin-alert admin-alert--error" style="margin-top:0.5rem">' +
+              res.warnings.join("<br>") +
+              "</div>";
+          }
+          msg.innerHTML = html;
+        });
+      })();
+    </script>
+  </body>
+</html>

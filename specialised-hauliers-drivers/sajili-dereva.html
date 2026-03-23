@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sajili Dereva — SHTL Admin</title>
+    <link rel="stylesheet" href="css/admin-app.css" />
+  </head>
+  <body class="admin-app">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="admin-page-title">Fomu ya dereva</h1>
+        <p class="admin-muted">
+          Taarifa zinafanana na safu za spreadsheet ya kampuni (TRUCK, DRIVER CODE, DOJ, leseni, Vehicle Type,
+          Driver Status, Status, n.k.).
+        </p>
+
+        <div class="admin-card">
+          <h2 id="form-title">Ongeza dereva mpya</h2>
+          <p class="admin-muted">
+            Safu zinafanana na spreadsheet ya kampuni. Ongeza
+            <a href="sajili-incharge.html">incharge</a> ikiwa unataka kuchagua msimamizi.
+          </p>
+          <div id="msg"></div>
+          <form id="form-driver">
+            <input type="hidden" id="edit-id" value="" />
+            <div class="admin-form-group">
+              <label for="truckNumber">Namba ya lori (TRUCK)</label>
+              <input id="truckNumber" placeholder="Mfano: T160DBL" />
+            </div>
+            <div class="admin-form-group">
+              <label for="driverName">Jina la dereva (DRIVER NAME)</label>
+              <input id="driverName" required placeholder="Jina kamili au NO DRIVER" />
+            </div>
+            <div class="admin-form-group">
+              <label for="driverCode">Msimbo wa dereva (DRIVER CODE)</label>
+              <input id="driverCode" placeholder="Mfano: CBF2582" />
+            </div>
+            <div class="admin-form-group">
+              <label for="doj">Tarehe ya kujiunga (DOJ)</label>
+              <input id="doj" type="date" />
+            </div>
+            <div class="admin-form-group">
+              <label for="drivingLicence">Namba ya leseni (LICENSE NUMBER)</label>
+              <input id="drivingLicence" inputmode="numeric" placeholder="Hifadhi kama maandishi" />
+            </div>
+            <div class="admin-form-group">
+              <label for="mobile">Nambari ya mawasiliano (Contact Number)</label>
+              <input id="mobile" placeholder="Mfano: 0689773141/0772734305" />
+            </div>
+            <div class="admin-form-group">
+              <label for="position">Nafasi (POSITION)</label>
+              <select id="position">
+                <option value="">— Chagua nafasi —</option>
+                <option value="FLATBED">FLATBED</option>
+                <option value="Helper">Helper</option>
+                <option value="Main Driver">Main Driver</option>
+                <option value="Port Only Driver">Port Only Driver</option>
+                <option value="SEMI TRUCK">SEMI TRUCK</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label for="licenseIssueDate">Tarehe ya kutolewa leseni (ISSUE DATE)</label>
+              <input id="licenseIssueDate" type="date" />
+            </div>
+            <div class="admin-form-group">
+              <label for="licenseExpiryDate">Tarehe ya kuisha leseni (EXPIRE DATE)</label>
+              <input id="licenseExpiryDate" type="date" />
+            </div>
+            <div class="admin-form-group">
+              <label for="inchargeId">Incharge</label>
+              <select id="inchargeId">
+                <option value="">— Hapana / baadaye —</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label for="tippers">Aina ya gari (Vehicle Type)</label>
+              <select id="tippers">
+                <option value="">— Chagua aina ya gari —</option>
+                <option value="FLATBED">FLATBED</option>
+                <option value="CONTAINER">CONTAINER</option>
+                <option value="SEMI TRUCK">SEMI TRUCK</option>
+                <option value="LOWBED">LOWBED</option>
+                <option value="TANKER">TANKER</option>
+                <option value="TIPPER">TIPPER</option>
+                <option value="TIPPERS">TIPPERS</option>
+                <option value="SIDE TIPPER">SIDE TIPPER</option>
+                <option value="CURTAINSIDER">CURTAINSIDER</option>
+                <option value="SUPER LINK">SUPER LINK</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label for="driverAssignmentStatus">Hali ya dereva (Driver Status)</label>
+              <select id="driverAssignmentStatus">
+                <option value="">— Chagua —</option>
+                <option value="WITH DRIVER">WITH DRIVER</option>
+                <option value="NO DRIVER">NO DRIVER</option>
+                <option value="#N/A">#N/A</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label for="assignedDate">Tarehe ya kupewa lori (ASSIGNED DATE)</label>
+              <input id="assignedDate" type="date" />
+            </div>
+            <div class="admin-form-group">
+              <label for="operationalStatus">Hali ya operesheni (Status)</label>
+              <select id="operationalStatus">
+                <option value="">— Chagua —</option>
+                <option value="RUNNING">RUNNING</option>
+                <option value="STOPPED">STOPPED</option>
+                <option value="MAINTENANCE">MAINTENANCE</option>
+                <option value="PARKED">PARKED</option>
+                <option value="OUT OF SERVICE">OUT OF SERVICE</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label for="currentStatus">Hali ya sasa mfumo (CURRENT STATUS)</label>
+              <select id="currentStatus">
+                <option value="">— Chagua hali —</option>
+                <option value="ON THE TRUCK">ON THE TRUCK</option>
+                <option value="DROPPED">DROPPED</option>
+                <option value="OFF DUTY">OFF DUTY</option>
+                <option value="ON LEAVE">ON LEAVE</option>
+                <option value="YARD">YARD</option>
+                <option value="VIKINDU YARD">VIKINDU YARD</option>
+                <option value="MAINTENANCE">MAINTENANCE</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label for="sinceDate">Tangu tarehe (SINCE)</label>
+              <input id="sinceDate" type="date" />
+            </div>
+            <div class="admin-form-check">
+              <input type="checkbox" id="dropped" name="dropped" />
+              <label for="dropped">
+                Dropped driver
+                <small>Hawako tena kwenye orodha kuu; wataonekana kwenye ukurasa wa Dropped drivers.</small>
+              </label>
+            </div>
+            <button type="submit" class="admin-btn admin-btn--primary" id="btn-save">Hifadhi dereva</button>
+            <button type="button" class="admin-btn admin-btn--secondary" id="btn-cancel-edit" hidden>
+              Ghairi uhariri
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-shell.js"></script>
+    <script>
+      (function () {
+        if (!window.SHTLAuth.requireAuth("index.html")) return;
+        window.SHTLAdminShell.render("form");
+
+        var sel = document.getElementById("inchargeId");
+        function fillIncharges() {
+          var list = window.SHTL.getIncharges();
+          var keep = sel.value;
+          sel.querySelectorAll('option:not([value=""])').forEach(function (o) {
+            o.remove();
+          });
+          list.forEach(function (inc) {
+            var opt = document.createElement("option");
+            opt.value = inc.id;
+            opt.textContent = inc.name;
+            sel.appendChild(opt);
+          });
+          if (keep && Array.from(sel.options).some(function (o) { return o.value === keep; })) {
+            sel.value = keep;
+          }
+        }
+
+        function getQueryId() {
+          var q = new URLSearchParams(window.location.search);
+          return q.get("id") || "";
+        }
+
+        function ensureSelectValue(selectEl, value) {
+          if (!selectEl) return;
+          var v = value != null ? String(value).trim() : "";
+          if (!v) {
+            selectEl.value = "";
+            return;
+          }
+          var exists = Array.from(selectEl.options).some(function (o) {
+            return o.value === v;
+          });
+          if (!exists) {
+            var opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v + " (iliyohifadhiwa)";
+            selectEl.appendChild(opt);
+          }
+          selectEl.value = v;
+        }
+
+        function loadEdit(id) {
+          var drivers = window.SHTL.getDrivers();
+          var d = drivers.find(function (x) { return x.id === id; });
+          if (!d) return;
+          document.getElementById("edit-id").value = d.id;
+          document.getElementById("truckNumber").value = d.truckNumber || "";
+          document.getElementById("driverName").value = d.driverName || "";
+          document.getElementById("driverCode").value = d.driverCode || "";
+          document.getElementById("doj").value = d.doj || "";
+          document.getElementById("drivingLicence").value = d.drivingLicence || "";
+          document.getElementById("mobile").value = d.mobile || "";
+          document.getElementById("inchargeId").value = d.inchargeId || "";
+          ensureSelectValue(document.getElementById("position"), d.position);
+          document.getElementById("licenseIssueDate").value = d.licenseIssueDate || "";
+          document.getElementById("licenseExpiryDate").value = d.licenseExpiryDate || "";
+          ensureSelectValue(document.getElementById("tippers"), d.tippers);
+          ensureSelectValue(document.getElementById("driverAssignmentStatus"), d.driverAssignmentStatus);
+          document.getElementById("assignedDate").value = d.assignedDate || "";
+          ensureSelectValue(document.getElementById("operationalStatus"), d.operationalStatus);
+          ensureSelectValue(document.getElementById("currentStatus"), d.currentStatus);
+          document.getElementById("sinceDate").value = d.sinceDate || "";
+          document.getElementById("dropped").checked = !!d.dropped;
+          document.getElementById("form-title").textContent = "Hariri dereva";
+          document.getElementById("btn-save").textContent = "Hifadhi mabadiliko";
+          document.getElementById("btn-cancel-edit").hidden = false;
+        }
+
+        fillIncharges();
+        var eid = getQueryId();
+        if (eid) loadEdit(eid);
+
+        document.getElementById("btn-cancel-edit").addEventListener("click", function () {
+          window.location.href = "sajili-dereva.html";
+        });
+
+        document.getElementById("form-driver").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var msg = document.getElementById("msg");
+          msg.innerHTML = "";
+          var inchargeId = document.getElementById("inchargeId").value;
+          var nowDropped = document.getElementById("dropped").checked;
+          var editId = document.getElementById("edit-id").value;
+          var drivers = window.SHTL.getDrivers();
+          var prev = editId ? drivers.find(function (x) { return x.id === editId; }) : null;
+          var droppedAt = prev && prev.droppedAt ? prev.droppedAt : "";
+          if (nowDropped && !(prev && prev.dropped)) {
+            droppedAt = new Date().toISOString();
+          }
+          if (!nowDropped) {
+            droppedAt = "";
+          }
+          var payload = {
+            truckNumber: document.getElementById("truckNumber").value.trim(),
+            drivingLicence: document.getElementById("drivingLicence").value.trim(),
+            driverName: document.getElementById("driverName").value.trim(),
+            driverCode: document.getElementById("driverCode").value.trim(),
+            doj: document.getElementById("doj").value,
+            mobile: document.getElementById("mobile").value.trim(),
+            inchargeId: inchargeId,
+            position: document.getElementById("position").value.trim(),
+            licenseIssueDate: document.getElementById("licenseIssueDate").value,
+            licenseExpiryDate: document.getElementById("licenseExpiryDate").value,
+            tippers: document.getElementById("tippers").value.trim(),
+            driverAssignmentStatus: document.getElementById("driverAssignmentStatus").value.trim(),
+            assignedDate: document.getElementById("assignedDate").value,
+            operationalStatus: document.getElementById("operationalStatus").value.trim(),
+            currentStatus: document.getElementById("currentStatus").value.trim(),
+            sinceDate: document.getElementById("sinceDate").value,
+            dropped: nowDropped,
+            droppedAt: droppedAt,
+          };
+          if (editId) {
+            var ix = drivers.findIndex(function (x) { return x.id === editId; });
+            if (ix === -1) {
+              msg.innerHTML = '<div class="admin-alert admin-alert--error">Dereva hayupo.</div>';
+              return;
+            }
+            drivers[ix] = Object.assign({}, drivers[ix], payload);
+          } else {
+            drivers.push(
+              Object.assign(
+                {
+                  id: window.SHTL.uid(),
+                  createdAt: new Date().toISOString(),
+                  dropped: false,
+                  droppedAt: "",
+                },
+                payload
+              )
+            );
+          }
+          window.SHTL.saveDrivers(drivers);
+          msg.innerHTML =
+            '<div class="admin-alert admin-alert--success">Taarifa zimehifadhiwa. <a href="orodha-madereva.html">Orodha ya madereva</a></div>';
+          if (!editId) document.getElementById("form-driver").reset();
+          else window.location.href = "orodha-madereva.html";
+        });
+      })();
+    </script>
+  </body>
+</html>
