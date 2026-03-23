@@ -1,0 +1,325 @@
+/* Specialised Hauliers (T) Ltd — Mfumo wa Madereva */
+
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --border: #334155;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #f59e0b;
+  --accent-dim: #d97706;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --radius: 10px;
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  background: linear-gradient(160deg, var(--bg) 0%, #1a1f35 50%, var(--bg) 100%);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.brand .handle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.nav a {
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.nav a:hover {
+  background: var(--surface-hover);
+  border-color: var(--muted);
+  text-decoration: none;
+}
+
+.nav a.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.nav-spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  color: #0f172a;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: #475569;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.alert-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--danger);
+  color: #fecaca;
+}
+
+.alert-success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid var(--success);
+  color: #bbf7d0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--bg);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.empty-state {
+  color: var(--muted);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tabs button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tabs button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.footer-note {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Orodha inayofanana na muonekano wa spreadsheet (kichwa cha buluu) */
+.table-spreadsheet th {
+  background: #00aeef;
+  color: #0f172a;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #000;
+}
+
+.table-spreadsheet td {
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid var(--border);
+}
+
+.table-spreadsheet--wide {
+  min-width: 1100px;
+}
+
+.table-spreadsheet--wide th,
+.table-spreadsheet--wide td {
+  white-space: nowrap;
+}
+
+.table-spreadsheet--wide th:nth-child(4),
+.table-spreadsheet--wide td:nth-child(4) {
+  white-space: normal;
+  max-width: 220px;
+}
+
+@media (max-width: 600px) {
+  .nav {
+    flex-direction: column;
+  }
+
+  .nav-spacer {
+    display: none;
+  }
+}

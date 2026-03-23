@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pakua Excel — SHTL Admin</title>
+    <link rel="stylesheet" href="css/admin-app.css" />
+  </head>
+  <body class="admin-app">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="admin-page-title">Pakua Excel</h1>
+        <p class="admin-muted">
+          Pakua ripoti, uhariri kwenye Excel au kwenye mfumo, kisha pakua tena. Kuingiza faili kutoka
+          nje tumia <a href="import-madereva.html">Ingiza Excel</a>.
+        </p>
+
+        <div class="admin-card">
+          <h2>Hamisha taarifa zote za madereva</h2>
+          <p class="admin-muted">
+            Faili litakuwa <strong>.xlsx</strong> (Excel) lenye vichwa vya rangi ya buluu (#00AEEF) na safu
+            kama spreadsheet ya kampuni: <strong>TRUCK</strong>, <strong>DRIVER NAME</strong>,
+            <strong>DRIVER CODE</strong>, <strong>DOJ</strong>, <strong>LICENSE NUMBER</strong>,
+            <strong>Contact Number</strong>, <strong>POSITION</strong>, <strong>ISSUE</strong> /
+            <strong>EXPIRE DATE</strong>, <strong>Incharge</strong>, <strong>Vehicle Type</strong>,
+            <strong>Driver Status</strong>, <strong>ASSIGNED DATE</strong>, <strong>Status</strong>, pamoja na
+            <strong>CURRENT STATUS</strong>, <strong>SINCE</strong>, <strong>DROPPED</strong> /
+            <strong>DROPPED DATE</strong>. Namba za leseni na simu zimewekwa kama maandishi.
+          </p>
+          <p class="admin-muted">Idadi ya madereva: <strong id="c-drivers">0</strong></p>
+          <div id="msg"></div>
+          <button type="button" class="admin-btn admin-btn--primary" id="btn-dl">Pakua sasa</button>
+          <a class="admin-btn admin-btn--secondary" href="orodha-madereva.html">Orodha ya madereva</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-shell.js"></script>
+    <script src="js/excel-export.js"></script>
+    <script>
+      (function () {
+        if (!window.SHTLAuth.requireAuth("index.html")) return;
+        window.SHTLAdminShell.render("excel");
+        document.getElementById("c-drivers").textContent = String(
+          window.SHTL.getDrivers().length
+        );
+
+        document.getElementById("btn-dl").addEventListener("click", function () {
+          var msg = document.getElementById("msg");
+          msg.innerHTML = "";
+          if (!window.SHTL.getDrivers().length) {
+            msg.innerHTML =
+              '<div class="admin-alert admin-alert--error">Hakuna dereva wa kupakua. Sajili dereva kwanza.</div>';
+            return;
+          }
+          window.SHTLExcel.downloadDriversReport().catch(function (err) {
+            msg.innerHTML =
+              '<div class="admin-alert admin-alert--error">' +
+              (err && err.message ? err.message : "Hitilafu ya kutengeneza faili.") +
+              "</div>";
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

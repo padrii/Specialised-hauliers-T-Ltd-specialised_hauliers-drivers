@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Usajili Admin — SHTL</title>
+    <link rel="stylesheet" href="css/auth-split.css" />
+  </head>
+  <body class="auth-split-page">
+    <div class="auth-split">
+      <div class="auth-split__form-col">
+        <div class="auth-split__form-inner">
+          <div class="auth-split__avatar" aria-hidden="true">🔑</div>
+          <h1 class="auth-split__title">Registration</h1>
+          <p class="auth-split__note" style="margin: -1rem 0 1.25rem; text-align: center" id="gate-note"></p>
+          <div id="msg"></div>
+          <form id="form-admin">
+            <div class="auth-split__field">
+              <label for="username">Username</label>
+              <input id="username" name="username" autocomplete="username" required />
+            </div>
+            <div class="auth-split__field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="si lazima" />
+            </div>
+            <div class="auth-split__field">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+            <button type="submit" class="auth-split__submit">Registration</button>
+          </form>
+          <p class="auth-split__footer-link">
+            Una akaunti? <a href="index.html">Bonyeza hapa Login</a>
+          </p>
+        </div>
+      </div>
+      <div class="auth-split__visual" aria-hidden="true">
+        <div class="auth-split__blob auth-split__blob--1"></div>
+        <div class="auth-split__blob auth-split__blob--2"></div>
+        <div class="auth-split__blob auth-split__blob--3"></div>
+        <div class="auth-split__decor">
+          <svg
+            class="auth-split__illustration"
+            viewBox="0 0 200 220"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <ellipse cx="100" cy="200" rx="70" ry="14" fill="rgba(0,0,0,0.12)" />
+            <circle cx="100" cy="95" r="38" fill="#ffdcc8" />
+            <ellipse cx="88" cy="92" rx="4" ry="5" fill="#333" />
+            <ellipse cx="112" cy="92" rx="4" ry="5" fill="#333" />
+            <rect x="72" y="128" width="56" height="48" rx="8" fill="#fff" />
+            <rect x="78" y="134" width="44" height="36" rx="4" fill="#b8f0e0" />
+            <rect x="115" y="125" width="28" height="42" rx="4" fill="#ffd54f" />
+            <circle cx="100" cy="118" r="22" fill="#1a365d" />
+            <path d="M88 118 L100 108 L112 118 L106 132 L94 132 Z" fill="#fff" />
+          </svg>
+        </div>
+        <div class="auth-split__brand">Specialised Hauliers (T) Ltd</div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      (function () {
+        var hasAdmins = window.SHTLAuth.hasAnyAdmin();
+        if (hasAdmins && !window.SHTLAuth.isLoggedIn()) {
+          window.location.href = "index.html";
+          return;
+        }
+        document.getElementById("gate-note").textContent = hasAdmins
+          ? "Ongeza admin mwingine (umekwisha ingia)."
+          : "Hatua ya kwanza: sajili admin, kisha ingia.";
+
+        document.getElementById("form-admin").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var u = document.getElementById("username").value.trim();
+          var p = document.getElementById("password").value;
+          var em = document.getElementById("email").value.trim();
+          var msg = document.getElementById("msg");
+          msg.innerHTML = "";
+          var r = window.SHTLAuth.registerAdmin(u, p, em);
+          if (!r.ok) {
+            msg.innerHTML = '<div class="auth-split__msg auth-split__msg--error">' + r.message + "</div>";
+            return;
+          }
+          if (window.SHTLAuth.isLoggedIn()) {
+            msg.innerHTML =
+              '<div class="auth-split__msg auth-split__msg--ok">Admin ameongezwa. <a href="dashboard.html">Dashibodi</a></div>';
+          } else {
+            msg.innerHTML =
+              '<div class="auth-split__msg auth-split__msg--ok">Imefanikiwa. <a href="index.html">Ingia sasa</a></div>';
+          }
+          document.getElementById("form-admin").reset();
+        });
+      })();
+    </script>
+  </body>
+</html>

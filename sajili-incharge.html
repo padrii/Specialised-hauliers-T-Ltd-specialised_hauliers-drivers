@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sajili Incharge — SHTL Admin</title>
+    <link rel="stylesheet" href="css/admin-app.css" />
+  </head>
+  <body class="admin-app">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="admin-page-title">Sajili Incharge</h1>
+        <p class="admin-muted">Supervisor / msimamizi wa dereva — unaweza kuhariri au kufuta incharge.</p>
+
+        <div class="admin-card">
+          <h2 id="form-incharge-title">Ongeza incharge mpya</h2>
+          <div id="msg"></div>
+          <form id="form-incharge">
+            <input type="hidden" id="edit-incharge-id" value="" />
+            <div class="admin-form-group">
+              <label for="name">Jina kamili la incharge</label>
+              <input id="name" name="name" required placeholder="Mfano: RASHID MKUKU" />
+            </div>
+            <button type="submit" class="admin-btn admin-btn--primary" id="btn-save-incharge">Hifadhi incharge</button>
+            <button type="button" class="admin-btn admin-btn--secondary" id="btn-cancel-incharge-edit" hidden>
+              Ghairi uhariri
+            </button>
+          </form>
+        </div>
+
+        <div class="admin-card">
+          <h2>Incharge waliopo</h2>
+          <div class="admin-table-wrap">
+            <table class="table-spreadsheet">
+              <thead>
+                <tr>
+                  <th>Jina</th>
+                  <th>Idadi ya madereva</th>
+                  <th>Vitendo</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-incharges"></tbody>
+            </table>
+          </div>
+          <p class="admin-empty" id="empty-incharges" hidden>Hakuna incharge bado.</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-shell.js"></script>
+    <script>
+      (function () {
+        if (!window.SHTLAuth.requireAuth("index.html")) return;
+        window.SHTLAdminShell.render("incharge");
+
+        function countDriversForIncharge(id) {
+          return window.SHTL.getDrivers().filter(function (d) {
+            return d.inchargeId === id;
+          }).length;
+        }
+
+        function clearEditMode() {
+          document.getElementById("edit-incharge-id").value = "";
+          document.getElementById("name").value = "";
+          document.getElementById("form-incharge-title").textContent = "Ongeza incharge mpya";
+          document.getElementById("btn-save-incharge").textContent = "Hifadhi incharge";
+          document.getElementById("btn-cancel-incharge-edit").hidden = true;
+        }
+
+        function startEdit(inc) {
+          document.getElementById("edit-incharge-id").value = inc.id;
+          document.getElementById("name").value = inc.name;
+          document.getElementById("form-incharge-title").textContent = "Hariri incharge";
+          document.getElementById("btn-save-incharge").textContent = "Hifadhi mabadiliko";
+          document.getElementById("btn-cancel-incharge-edit").hidden = false;
+          document.getElementById("name").focus();
+        }
+
+        function renderTable() {
+          var list = window.SHTL.getIncharges();
+          var tb = document.getElementById("tbody-incharges");
+          var empty = document.getElementById("empty-incharges");
+          tb.innerHTML = "";
+          if (!list.length) {
+            empty.hidden = false;
+            return;
+          }
+          empty.hidden = true;
+          list.forEach(function (inc) {
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            td1.textContent = inc.name;
+            var td2 = document.createElement("td");
+            td2.textContent = String(countDriversForIncharge(inc.id));
+            var td3 = document.createElement("td");
+            var edit = document.createElement("button");
+            edit.type = "button";
+            edit.className = "admin-btn admin-btn--outline";
+            edit.textContent = "Hariri";
+            edit.style.marginRight = "0.35rem";
+            edit.addEventListener("click", function () {
+              startEdit(inc);
+            });
+            var del = document.createElement("button");
+            del.type = "button";
+            del.className = "admin-btn admin-btn--danger";
+            del.textContent = "Futa";
+            del.addEventListener("click", function () {
+              var n = countDriversForIncharge(inc.id);
+              if (n > 0) {
+                alert(
+                  "Huwezi kufuta incharge huyu: kuna madereva " +
+                    n +
+                    " chini yake. Badilisha incharge kwenye fomu ya dereva kwanza, kisha rudi hapa."
+                );
+                return;
+              }
+              if (!confirm("Una uhakika unataka kufuta incharge: " + inc.name + "?")) return;
+              var rest = window.SHTL.getIncharges().filter(function (x) {
+                return x.id !== inc.id;
+              });
+              window.SHTL.saveIncharges(rest);
+              if (document.getElementById("edit-incharge-id").value === inc.id) {
+                clearEditMode();
+              }
+              renderTable();
+            });
+            td3.appendChild(edit);
+            td3.appendChild(del);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tb.appendChild(tr);
+          });
+        }
+
+        document.getElementById("btn-cancel-incharge-edit").addEventListener("click", function () {
+          clearEditMode();
+        });
+
+        document.getElementById("form-incharge").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var name = document.getElementById("name").value.trim();
+          var msg = document.getElementById("msg");
+          var editId = document.getElementById("edit-incharge-id").value;
+          msg.innerHTML = "";
+          if (!name) {
+            msg.innerHTML = '<div class="admin-alert admin-alert--error">Jaza jina la incharge.</div>';
+            return;
+          }
+          var all = window.SHTL.getIncharges();
+          var dup = all.some(function (x) {
+            return x.name.toLowerCase() === name.toLowerCase() && x.id !== editId;
+          });
+          if (dup) {
+            msg.innerHTML = '<div class="admin-alert admin-alert--error">Jina hili lipo tayari.</div>';
+            return;
+          }
+          if (editId) {
+            var ix = all.findIndex(function (x) {
+              return x.id === editId;
+            });
+            if (ix === -1) {
+              msg.innerHTML = '<div class="admin-alert admin-alert--error">Incharge hayupo.</div>';
+              return;
+            }
+            all[ix] = Object.assign({}, all[ix], { name: name });
+          } else {
+            all.push({
+              id: window.SHTL.uid(),
+              name: name,
+              createdAt: new Date().toISOString(),
+            });
+          }
+          window.SHTL.saveIncharges(all);
+          msg.innerHTML =
+            '<div class="admin-alert admin-alert--success">Incharge amehifadhiwa.</div>';
+          clearEditMode();
+          document.getElementById("form-incharge").reset();
+          renderTable();
+        });
+
+        renderTable();
+      })();
+    </script>
+  </body>
+</html>

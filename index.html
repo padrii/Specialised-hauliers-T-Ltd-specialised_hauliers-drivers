@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ingia — SHTL</title>
+    <link rel="stylesheet" href="css/auth-split.css" />
+  </head>
+  <body class="auth-split-page">
+    <div class="auth-split">
+      <div class="auth-split__form-col">
+        <div class="auth-split__form-inner">
+          <div class="auth-split__avatar" aria-hidden="true">🚛</div>
+          <h1 class="auth-split__title">Login</h1>
+          <div id="msg"></div>
+          <form id="form-login">
+            <div class="auth-split__field">
+              <label for="username">Username</label>
+              <input
+                id="username"
+                name="username"
+                autocomplete="username"
+                required
+                placeholder=""
+              />
+            </div>
+            <div class="auth-split__field">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+            <button type="submit" class="auth-split__submit">Login</button>
+          </form>
+          <p class="auth-split__footer-link" id="bootstrap-link"></p>
+          <p class="auth-split__note">
+            Specialised Hauliers (T) Ltd — data kwenye kivinjari (local storage).
+          </p>
+        </div>
+      </div>
+      <div class="auth-split__visual" aria-hidden="true">
+        <div class="auth-split__blob auth-split__blob--1"></div>
+        <div class="auth-split__blob auth-split__blob--2"></div>
+        <div class="auth-split__blob auth-split__blob--3"></div>
+        <div class="auth-split__decor">
+          <svg
+            class="auth-split__illustration"
+            viewBox="0 0 200 220"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <ellipse cx="100" cy="200" rx="70" ry="14" fill="rgba(0,0,0,0.12)" />
+            <circle cx="100" cy="95" r="38" fill="#ffdcc8" />
+            <path d="M78 88 Q100 72 122 88" fill="none" stroke="#333" stroke-width="2" />
+            <ellipse cx="88" cy="92" rx="4" ry="5" fill="#333" />
+            <ellipse cx="112" cy="92" rx="4" ry="5" fill="#333" />
+            <path
+              d="M92 108 Q100 114 108 108"
+              fill="none"
+              stroke="#c44"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <rect x="72" y="128" width="56" height="48" rx="8" fill="#fff" />
+            <rect x="78" y="134" width="44" height="36" rx="4" fill="#b8f0e0" />
+            <rect x="62" y="150" width="76" height="22" rx="6" fill="#fff" />
+            <circle cx="100" cy="118" r="22" fill="#1a365d" />
+            <path d="M88 118 L100 108 L112 118 L106 132 L94 132 Z" fill="#fff" />
+            <rect x="115" y="125" width="28" height="42" rx="4" fill="#ffd54f" />
+            <rect x="118" y="128" width="22" height="30" rx="2" fill="#333" opacity="0.15" />
+          </svg>
+        </div>
+        <div class="auth-split__brand">@specialised_hauliers</div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      (function () {
+        if (window.SHTLAuth.isLoggedIn()) {
+          window.location.href = "dashboard.html";
+          return;
+        }
+        var link = document.getElementById("bootstrap-link");
+        if (!window.SHTLAuth.hasAnyAdmin()) {
+          link.innerHTML =
+            'Huna akaunti? <a href="sajili-admin.html">Bonyeza hapa Usajili</a>';
+        } else {
+          link.innerHTML =
+            'Admin mwingine: ingia kisha <a href="dashboard.html">Dashibodi</a> → Watumiaji.';
+        }
+
+        document.getElementById("form-login").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var u = document.getElementById("username").value.trim();
+          var p = document.getElementById("password").value;
+          var msg = document.getElementById("msg");
+          msg.innerHTML = "";
+          var r = window.SHTLAuth.login(u, p);
+          if (!r.ok) {
+            msg.innerHTML = '<div class="auth-split__msg auth-split__msg--error">' + r.message + "</div>";
+            return;
+          }
+          window.location.href = "dashboard.html";
+        });
+      })();
+    </script>
+  </body>
+</html>

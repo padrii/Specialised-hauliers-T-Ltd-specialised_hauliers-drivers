@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orodha ya Madereva — SHTL Admin</title>
+    <link rel="stylesheet" href="css/admin-app.css" />
+  </head>
+  <body class="admin-app">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="admin-page-title">Orodha ya madereva</h1>
+        <p class="admin-muted">Madereva hai pekee (si dropped). Kwa walioacha, tembelea Dropped drivers.</p>
+
+        <div class="admin-card">
+          <p class="admin-muted" style="margin-top: 0">
+            Pakua faili lenye safu sawa na spreadsheet —
+            <a href="pakua-excel.html">Pakua Excel</a>
+            ·
+            <a href="madereva-dropped.html">Dropped drivers</a>
+          </p>
+          <div class="admin-table-wrap">
+            <table class="table-spreadsheet table-spreadsheet--wide">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>TRUCK</th>
+                  <th>DRIVER NAME</th>
+                  <th>DRIVER CODE</th>
+                  <th>DOJ</th>
+                  <th>LICENSE</th>
+                  <th>CONTACT</th>
+                  <th>POSITION</th>
+                  <th>ISSUE</th>
+                  <th>EXPIRE</th>
+                  <th>INCHARGE</th>
+                  <th>VEHICLE</th>
+                  <th>DRIVER ST.</th>
+                  <th>ASSIGNED</th>
+                  <th>STATUS</th>
+                  <th>CURRENT</th>
+                  <th>SINCE</th>
+                  <th>Vitendo</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-drivers"></tbody>
+            </table>
+          </div>
+          <p class="admin-empty" id="empty-drivers" hidden>
+            Hakuna dereva hai. Angalia <a href="madereva-dropped.html">Dropped drivers</a> au ongeza mpya.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-shell.js"></script>
+    <script src="js/excel-export.js"></script>
+    <script>
+      (function () {
+        if (!window.SHTLAuth.requireAuth("index.html")) return;
+        window.SHTLAdminShell.render("table");
+
+        function inchargeName(id) {
+          var f = window.SHTL.getIncharges().find(function (i) {
+            return i.id === id;
+          });
+          return f ? f.name : "";
+        }
+
+        function formatDate(value) {
+          return window.SHTLExcel.formatDateMDY(value);
+        }
+
+        function render() {
+          var drivers = window.SHTL.getDrivers().filter(function (d) {
+            return !d.dropped;
+          });
+          var tb = document.getElementById("tbody-drivers");
+          var empty = document.getElementById("empty-drivers");
+          tb.innerHTML = "";
+          if (!drivers.length) {
+            empty.hidden = false;
+            return;
+          }
+          empty.hidden = true;
+          drivers.forEach(function (d, idx) {
+            var lic = d.drivingLicence != null ? String(d.drivingLicence) : "";
+            var tr = document.createElement("tr");
+            function td(text) {
+              var c = document.createElement("td");
+              c.textContent = text;
+              return c;
+            }
+            tr.appendChild(td(String(idx + 1)));
+            tr.appendChild(td(d.truckNumber || ""));
+            tr.appendChild(td((d.driverName || "").toUpperCase()));
+            tr.appendChild(td(d.driverCode || ""));
+            tr.appendChild(td(formatDate(d.doj)));
+            tr.appendChild(td(lic));
+            tr.appendChild(td(d.mobile || ""));
+            tr.appendChild(td(d.position || ""));
+            tr.appendChild(td(formatDate(d.licenseIssueDate)));
+            tr.appendChild(td(formatDate(d.licenseExpiryDate)));
+            tr.appendChild(td(inchargeName(d.inchargeId)));
+            tr.appendChild(td(d.tippers || ""));
+            tr.appendChild(td(d.driverAssignmentStatus || ""));
+            tr.appendChild(td(formatDate(d.assignedDate)));
+            tr.appendChild(td(d.operationalStatus || ""));
+            tr.appendChild(td(d.currentStatus || ""));
+            tr.appendChild(td(formatDate(d.sinceDate)));
+
+            var tdAct = document.createElement("td");
+            var edit = document.createElement("a");
+            edit.href = "sajili-dereva.html?id=" + encodeURIComponent(d.id);
+            edit.textContent = "Hariri";
+            edit.style.marginRight = "0.65rem";
+            var dropBtn = document.createElement("button");
+            dropBtn.type = "button";
+            dropBtn.className = "admin-btn admin-btn--warn";
+            dropBtn.textContent = "Weka dropped";
+            dropBtn.addEventListener("click", function () {
+              if (!confirm("Kuweka dereva huyu kama dropped? Hataonekana hapa hadi arudishwe.")) return;
+              var all = window.SHTL.getDrivers();
+              var ix = all.findIndex(function (x) {
+                return x.id === d.id;
+              });
+              if (ix === -1) return;
+              all[ix] = Object.assign({}, all[ix], {
+                dropped: true,
+                droppedAt: new Date().toISOString(),
+              });
+              window.SHTL.saveDrivers(all);
+              render();
+            });
+            var del = document.createElement("button");
+            del.type = "button";
+            del.className = "admin-btn admin-btn--danger";
+            del.textContent = "Futa";
+            del.addEventListener("click", function () {
+              if (!confirm("Una uhakika unataka kufuta dereva huyu?")) return;
+              var rest = window.SHTL.getDrivers().filter(function (x) {
+                return x.id !== d.id;
+              });
+              window.SHTL.saveDrivers(rest);
+              render();
+            });
+            tdAct.appendChild(edit);
+            tdAct.appendChild(dropBtn);
+            tdAct.appendChild(del);
+            tr.appendChild(tdAct);
+            tb.appendChild(tr);
+          });
+        }
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
